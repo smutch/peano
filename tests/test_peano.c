@@ -1,8 +1,9 @@
 #include <criterion/criterion.h>
 #include <criterion/logging.h>
+#include <criterion/parameterized.h>
 #include "../src/peano.h"
 
-Test(basic, zero)
+Test(single, zero)
 {
     long long key = peano_hilbert_key(0, 0, 0, 8);
     cr_assert_eq(key, 0ll);
@@ -14,7 +15,7 @@ Test(basic, zero)
     cr_assert_eq(z, 0);
 }
 
-Test(basic, forward_back)
+Test(single, forward_back)
 {
     int x = 7;
     int y = 126;
@@ -29,12 +30,54 @@ Test(basic, forward_back)
     cr_assert_eq(zr, z);
 }
 
-Test(basic, fail_low_bits, .signal = SIGABRT)
+Test(single, fail_low_bits, .signal = SIGABRT)
 {
     peano_hilbert_key(0, 0, 28, 3);
 }
 
-Test(basic, max_bits)
+Test(single, max_bits)
 {
     peano_hilbert_key(0, 0, 26, 3);
+}
+
+Test(array, dummy)
+{
+    const unsigned n_points = 5;
+    long long keys[n_points];
+    int x[n_points], y[n_points], z[n_points];
+
+    for (unsigned ii = 0; ii < n_points; ii++) {
+        x[ii] = 0;
+        y[ii] = 0;
+        z[ii] = 0;
+    }
+
+    peano_hilbert_keys(x, y, z, (int)n_points, 8, keys);
+
+    for (unsigned ii = 0; ii < n_points; ii++) {
+        cr_log_info("x[%d]=%d, y[%d]=%d, z[%d]=%d => key[%d]=%lld\n", ii, x[ii], ii, y[ii], ii, z[ii], ii, keys[ii]);
+    }
+}
+
+ParameterizedTestParameters(array, zero_forward)
+{
+    const unsigned n_points = 5;
+    static long long keys[n_points];  // N.B. use of static here so as available outside
+    int x[n_points], y[n_points], z[n_points];
+
+    for (unsigned ii = 0; ii < n_points; ii++) {
+        x[ii] = 0;
+        y[ii] = 0;
+        z[ii] = 0;
+    }
+
+    peano_hilbert_keys(x, y, z, (int)n_points, 8, keys);
+
+    return cr_make_param_array(long long, keys, (int)n_points);
+}
+
+ParameterizedTest(long long* key, array, zero_forward)
+{
+    cr_log_info("key = %lld\n", *key);
+    cr_assert_eq(*key, 0ll);
 }

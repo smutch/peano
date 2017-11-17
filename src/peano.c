@@ -105,6 +105,11 @@ long long peano_hilbert_key(int x, int y, int z, int bits)
     return key;
 }
 
+void peano_hilbert_keys(int* x, int* y, int* z, int n_points, int bits, long long* keys)
+{
+    for(int ii = 0; ii < n_points; ii++)
+        keys[ii] = peano_hilbert_key(x[ii], y[ii], z[ii], bits);
+}
 
 void peano_hilbert_key_inverse(long long key, int bits, int *x, int *y, int *z)
 {
@@ -157,4 +162,11 @@ void peano_hilbert_key_inverse(long long key, int bits, int *x, int *y, int *z)
             roty--;
         }
     }
+}
+
+
+void peano_hilbert_keys_inverse(long long* keys, int n_keys, int bits, int *x, int *y, int *z)
+{
+    for(int ii = 0; ii < n_keys; ii++)
+        peano_hilbert_key_inverse(keys[ii], bits, &x[ii], &y[ii], &z[ii]);
 }

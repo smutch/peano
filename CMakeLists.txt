@@ -11,7 +11,8 @@ set(SOURCE_FILES
 
 add_library(peano SHARED ${SOURCE_FILES})
 
-if(!DISABLE_TESTS)
+set(DISABLE_TESTS OFF CACHE BOOL "Disable building of tests")
+if(NOT DISABLE_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
